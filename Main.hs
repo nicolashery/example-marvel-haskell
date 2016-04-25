@@ -18,7 +18,7 @@ import GHC.Generics (Generic)
 import Network.Wreq (defaults, param, getWith, responseBody)
 import System.Environment (getEnv)
 
-type App = ReaderT Config IO
+type App a = ReaderT Config IO a
 
 data Config = Config
   { port :: Int
@@ -57,6 +57,17 @@ data Character = Character
 instance FromJSON Character
 instance ToJSON Character
 
+data PaginationOptions = PaginationOptions
+  { limit :: Int
+  , offset :: Int
+  } deriving (Show)
+
+defaultPaginationOptions :: PaginationOptions
+defaultPaginationOptions = PaginationOptions
+  { limit = 20
+  , offset = 0
+  }
+
 getTimestamp :: IO Integer
 getTimestamp = liftA round getPOSIXTime
 
@@ -68,25 +79,25 @@ createHash ts = do
   let apiHash = show (md5 (TLE.encodeUtf8 (TL.fromStrict payload)))
   return apiHash
 
-findAllCharacters :: App (Either String CharactersResponse)
-findAllCharacters = do
+findAllCharacters :: PaginationOptions -> App (Either String CharactersResponse)
+findAllCharacters paginationOptions = do
   publicKey <- asks marvelPublicKey
   ts <- liftIO getTimestamp
   apiHash <- createHash ts
-  let limit = 2 :: Int
-  let offset = 0 :: Int
+  let _limit = limit paginationOptions
+  let _offset = offset paginationOptions
   let opts = defaults & param "ts" .~ [show ts]
                       & param "apikey" .~ [publicKey]
                       & param "hash" .~ [apiHash]
-                      & param "limit" .~ [show limit]
-                      & param "offset" .~ [show offset]
+                      & param "limit" .~ [show _limit]
+                      & param "offset" .~ [show _offset]
   r <- liftIO (getWith opts "http://gateway.marvel.com/v1/public/characters")
   let result = eitherDecode (r ^. responseBody)
   return result
 
 application :: App ()
 application = do
-  result <- findAllCharacters
+  result <- findAllCharacters defaultPaginationOptions
   liftIO (print (show result))
 
 main :: IO ()
