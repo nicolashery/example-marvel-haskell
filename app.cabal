@@ -19,3 +19,4 @@ executable          app
                   , aeson
                   , lens-aeson
                   , mtl
+                  , wai-extra
