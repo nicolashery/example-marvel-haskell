@@ -8,15 +8,23 @@ executable          app
     main-is:        Main.hs
     ghc-options:    -Wall -threaded -O2 -rtsopts -with-rtsopts=-N
     extensions:     OverloadedStrings
-    build-depends:  base   >= 4      && < 5
-                  , scotty >= 0.10.0 && < 0.11
-                  , wreq
-                  , basic-prelude
-                  , time
-                  , pureMD5
-                  , text
-                  , lens
-                  , aeson
-                  , lens-aeson
-                  , mtl
-                  , wai-extra
+    other-modules:
+        Models.Character
+      , Views.Components.CharactersList
+      , Views.Layout
+      , Views.Pages.Characters
+    build-depends:
+        base >= 4 && < 5
+      , scotty >= 0.10.0 && < 0.11
+      , wreq
+      , basic-prelude
+      , time
+      , pureMD5
+      , text
+      , lens
+      , aeson
+      , lens-aeson
+      , mtl
+      , wai-extra
+      , blaze-html
+      , blaze-markup

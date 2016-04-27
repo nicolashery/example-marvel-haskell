@@ -1,6 +1,5 @@
 {-# LANGUAGE NoImplicitPrelude #-}
 {-# LANGUAGE OverloadedStrings #-}
-{-# LANGUAGE DeriveGeneric #-}
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
 
 import BasicPrelude
@@ -8,18 +7,21 @@ import BasicPrelude
 import Control.Applicative (liftA)
 import Control.Lens ((&), (.~), (^.))
 import Control.Monad.Reader (MonadReader, ReaderT, runReaderT, asks)
-import Data.Aeson (FromJSON(..), ToJSON(..), Value(Object), eitherDecode)
+import Data.Aeson (FromJSON(..), Value(Object), eitherDecode)
 import Data.Aeson.Types ((.:))
 import Data.Digest.Pure.MD5 (md5)
 import qualified Data.Text as T
 import qualified Data.Text.Lazy as TL
 import qualified Data.Text.Lazy.Encoding as TLE
 import Data.Time.Clock.POSIX (getPOSIXTime)
-import GHC.Generics (Generic)
 import Network.Wai.Middleware.RequestLogger (logStdoutDev)
 import Network.Wreq (defaults, param, getWith, responseBody)
 import System.Environment (getEnv)
-import Web.Scotty.Trans (ScottyT, ActionT, scottyT, get, text, middleware)
+import Text.Blaze.Html.Renderer.Text (renderHtml)
+import Web.Scotty.Trans (ScottyT, ActionT, scottyT, get, text, html, middleware)
+
+import Models.Character (Character)
+import Views.Pages.Characters (charactersPageView)
 
 data Config = Config
   { port :: Int
@@ -52,15 +54,6 @@ instance FromJSON CharactersResponse where
     _characters <- _data .: "results"
     return (CharactersResponse _characters)
   parseJSON _ = mzero
-
-data Character = Character
-  { id :: Int
-  , name :: Text
-  , description :: Maybe Text
-  } deriving (Show, Generic)
-
-instance FromJSON Character
-instance ToJSON Character
 
 data PaginationOptions = PaginationOptions
   { limit :: Int
@@ -112,7 +105,11 @@ getHome = text "hello world"
 getCharacters :: ActionT TL.Text ConfigM ()
 getCharacters = do
   result <- lift (findAllCharacters defaultPaginationOptions)
-  text (TL.fromStrict (show result))
+  case result of
+    Left err ->
+      text (TL.pack err)
+    Right response ->
+      html (renderHtml (charactersPageView "Characters" (characters response)))
 
 main :: IO ()
 main = do
