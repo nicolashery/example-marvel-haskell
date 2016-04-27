@@ -21,4 +21,4 @@ getCharacters = do
     Left err ->
       text (TL.pack err)
     Right response ->
-      html (renderHtml (charactersPageView "Characters" (Mvl.characters response)))
+      html (renderHtml (charactersPageView "Characters | Marvel App" (Mvl.characters response)))
