@@ -9,7 +9,11 @@ executable          app
     ghc-options:    -Wall -threaded -O2 -rtsopts -with-rtsopts=-N
     extensions:     OverloadedStrings
     other-modules:
-        Models.Character
+        Config
+      , Controllers.Characters
+      , Controllers.Home
+      , Models.Character
+      , Services.Marvel
       , Views.Components.CharactersList
       , Views.Layout
       , Views.Pages.Characters

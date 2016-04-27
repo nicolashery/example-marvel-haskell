@@ -13,8 +13,8 @@ import qualified Text.Blaze.Html5 as H
 import qualified Text.Blaze.Html5.Attributes as A
 
 import Models.Character (Character)
-import Views.Layout (layoutView)
 import Views.Components.CharactersList (charactersListView)
+import Views.Layout (layoutView)
 
 charactersPageView :: Text -> [Character] -> Html
 charactersPageView pageTitle characters =
