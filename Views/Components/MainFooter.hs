@@ -19,6 +19,6 @@ mainFooterView =
         $ "Data provided by Marvel. © 2016 MARVEL"
     H.div ! A.class_ "col-md-6" $
       H.a
-        ! A.href "https://github.com/nicolashery/example-marvel-app"
+        ! A.href "https://github.com/nicolashery/example-marvel-haskell"
         ! A.target "_blank"
         $ "View on GitHub"
