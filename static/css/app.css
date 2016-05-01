@@ -1,0 +1,22 @@
+.pager li {
+  display: inline-block;
+  margin-right: 5px;
+}
+
+.text-ellipsis {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+a.thumbnail:hover,
+a.thumbnail:focus {
+  text-decoration: none;
+}
+
+footer {
+  margin-top: 20px;
+  padding: 30px 0;
+  background-color: #f8f8f8;
+  border-top: 1px solid #e7e7e7;
+}

@@ -6,6 +6,7 @@ import BasicPrelude
 import Control.Monad.Reader (runReaderT)
 import qualified Data.Text.Lazy as TL
 import Network.Wai.Middleware.RequestLogger (logStdoutDev)
+import Network.Wai.Middleware.Static (addBase, noDots, staticPolicy, (>->))
 import Web.Scotty.Trans (ScottyT, scottyT, get, middleware)
 
 import Config (ConfigM, getConfig, runConfigM)
@@ -20,6 +21,7 @@ router = do
 
 application :: ScottyT TL.Text ConfigM ()
 application = do
+  middleware (staticPolicy (noDots >-> addBase "static"))
   middleware logStdoutDev
   router
 

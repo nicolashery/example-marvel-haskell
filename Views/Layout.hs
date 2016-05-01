@@ -21,6 +21,7 @@ layoutView pageTitle bodyContent = H.docTypeHtml $ do
     H.meta ! A.name "description" ! A.content ""
     H.meta ! A.name "viewport" ! A.content "width=device-width, initial-scale=1"
     H.link ! A.rel "stylesheet" ! A.href "https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css"
+    H.link ! A.rel "stylesheet" ! A.href "/css/app.css"
   H.body $ do
     mainNavigationView
     H.div ! A.class_ "container" $ bodyContent

@@ -34,5 +34,6 @@ executable          app
       , lens-aeson
       , mtl
       , wai-extra
+      , wai-middleware-static
       , blaze-html
       , blaze-markup
