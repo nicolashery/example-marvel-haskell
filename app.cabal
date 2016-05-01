@@ -12,6 +12,7 @@ executable          app
         Config
       , Controllers.Characters
       , Controllers.Home
+      , Helpers.PageTitle
       , Models.Character
       , Services.Marvel
       , Views.Components.CharactersList

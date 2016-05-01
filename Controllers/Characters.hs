@@ -10,15 +10,17 @@ import Text.Blaze.Html.Renderer.Text (renderHtml)
 import Web.Scotty.Trans (ActionT, text, html)
 
 import Config (ConfigM)
+import Helpers.PageTitle (makePageTitle)
 import Services.Marvel (findAllCharacters, defaultPaginationOptions)
 import qualified Services.Marvel as Mvl
 import Views.Pages.Characters (charactersPageView)
 
 getCharacters :: ActionT TL.Text ConfigM ()
 getCharacters = do
+  let pageTitle = makePageTitle (Just "Characters")
   result <- lift (findAllCharacters defaultPaginationOptions)
   case result of
     Left err ->
       text (TL.pack err)
     Right response ->
-      html (renderHtml (charactersPageView "Characters | Marvel App" (Mvl.characters response)))
+      html (renderHtml (charactersPageView pageTitle (Mvl.characters response)))

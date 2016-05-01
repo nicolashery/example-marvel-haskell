@@ -13,15 +13,15 @@ import qualified Config as Cfg
 import Controllers.Home (getHome)
 import Controllers.Characters (getCharacters)
 
-routes :: ScottyT TL.Text ConfigM ()
-routes = do
+router :: ScottyT TL.Text ConfigM ()
+router = do
   get "/" getHome
   get "/characters" getCharacters
 
 application :: ScottyT TL.Text ConfigM ()
 application = do
   middleware logStdoutDev
-  routes
+  router
 
 main :: IO ()
 main = do
