@@ -14,10 +14,12 @@ executable          app
       , Controllers.Home
       , Helpers.PageTitle
       , Models.Character
+      , Models.Pagination
       , Services.Marvel
       , Views.Components.CharactersList
       , Views.Components.MainFooter
       , Views.Components.MainNavigation
+      , Views.Components.ResultsPagination
       , Views.Layout
       , Views.Pages.Characters
       , Views.Pages.Home

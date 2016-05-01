@@ -24,16 +24,32 @@ import Network.Wreq (defaults, param, getWith, responseBody)
 import Config (ConfigM)
 import qualified Config as Cfg
 import Models.Character (Character)
+import Models.Pagination (Pagination)
+import qualified Models.Pagination as P
 
 data CharactersResponse = CharactersResponse
   { characters :: [Character]
+  , pagination :: Pagination
   } deriving (Show)
 
 instance FromJSON CharactersResponse where
   parseJSON (Object o) = do
     _data <- o .: "data"
+    _offset <- _data .: "offset"
+    _limit <- _data .: "limit"
+    _total <- _data .: "total"
+    _count <- _data .: "count"
+    let _pagination = P.Pagination {
+        P.offset=_offset
+      , P.limit=_limit
+      , P.total=_total
+      , P.count=_count
+      }
     _characters <- _data .: "results"
-    return (CharactersResponse _characters)
+    return CharactersResponse
+      { characters=_characters
+      , pagination=_pagination
+      }
   parseJSON _ = mzero
 
 data PaginationOptions = PaginationOptions
