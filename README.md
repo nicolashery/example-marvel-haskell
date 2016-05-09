@@ -27,12 +27,14 @@ $ stack build
 Run the app with:
 
 ```bash
+$ source .env
 $ stack exec app
 ```
 
 For development, launch the REPL:
 
 ```bash
+$ source .env
 $ stack ghci
 ```
 
