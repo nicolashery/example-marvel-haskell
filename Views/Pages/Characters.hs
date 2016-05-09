@@ -18,12 +18,12 @@ import Views.Components.CharactersList (charactersListView)
 import Views.Components.ResultsPagination (resultsPaginationView)
 import Views.Layout (layoutView)
 
-charactersPageView :: Text -> Pagination -> [Character] -> Html
-charactersPageView pageTitle pagination characters =
-  layoutView pageTitle (charactersPageContentView pagination characters)
+charactersPageView :: Text -> Text -> Pagination -> [Character] -> Html
+charactersPageView rootPath pageTitle pagination characters =
+  layoutView rootPath pageTitle (charactersPageContentView rootPath pagination characters)
 
-charactersPageContentView :: Pagination -> [Character] -> Html
-charactersPageContentView pagination characters = do
+charactersPageContentView :: Text -> Pagination -> [Character] -> Html
+charactersPageContentView rootPath pagination characters = do
   H.div ! A.class_ "page-header" $ H.h1 "Characters"
-  resultsPaginationView pagination
+  resultsPaginationView rootPath pagination
   charactersListView characters

@@ -11,9 +11,9 @@ import qualified Text.Blaze.Html5.Attributes as A
 
 import Views.Layout (layoutView)
 
-homePageView :: Text -> Html
-homePageView pageTitle =
-  layoutView pageTitle $ H.div ! A.class_ "jumbotron" $ do
+homePageView :: Text -> Text -> Html
+homePageView rootPath pageTitle =
+  layoutView rootPath pageTitle $ H.div ! A.class_ "jumbotron" $ do
     H.h1 "Marvel App"
     H.p $ do
         H.span "This is an example app using the "

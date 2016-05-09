@@ -13,6 +13,7 @@ executable          app
       , Controllers.Characters
       , Controllers.Home
       , Helpers.PageTitle
+      , Helpers.PathInfo
       , Models.Character
       , Models.Pagination
       , Services.Marvel
@@ -35,6 +36,7 @@ executable          app
       , aeson
       , lens-aeson
       , mtl
+      , wai
       , wai-extra
       , wai-middleware-static
       , blaze-html

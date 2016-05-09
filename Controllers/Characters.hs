@@ -8,10 +8,11 @@ import BasicPrelude
 
 import qualified Data.Text.Lazy as TL
 import Text.Blaze.Html.Renderer.Text (renderHtml)
-import Web.Scotty.Trans (ActionT, text, html, param, rescue)
+import Web.Scotty.Trans (ActionT, text, html, param, request, rescue)
 
 import Config (ConfigM)
 import Helpers.PageTitle (makePageTitle)
+import Helpers.PathInfo (getRootPath)
 import Services.Marvel
   ( findAllCharacters
   , defaultPaginationOptions
@@ -24,6 +25,8 @@ getCharacters :: ActionT TL.Text ConfigM ()
 getCharacters = do
   _offset :: Int <- param "offset" `rescue` (\_ -> return 0)
   let paginationOptions = getPaginationOptions _offset
+  req <- request
+  let rootPath = getRootPath req
   let pageTitle = makePageTitle (Just "Characters")
   result <- lift (findAllCharacters paginationOptions)
   case result of
@@ -31,7 +34,7 @@ getCharacters = do
       text (TL.pack err)
     Right response ->
       html (renderHtml (charactersPageView
-        pageTitle (Mvl.pagination response) (Mvl.characters response)
+        rootPath pageTitle (Mvl.pagination response) (Mvl.characters response)
       ))
 
 getPaginationOptions :: Int -> PaginationOptions

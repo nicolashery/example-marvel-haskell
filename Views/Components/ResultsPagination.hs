@@ -12,8 +12,8 @@ import qualified Text.Blaze.Html5.Attributes as A
 import Models.Pagination (Pagination)
 import qualified Models.Pagination as P
 
-resultsPaginationView :: Pagination -> Html
-resultsPaginationView pagination = do
+resultsPaginationView :: Text -> Pagination -> Html
+resultsPaginationView rootPath pagination = do
   let start = show (P.getStart pagination)
   let end = show (P.getEnd pagination)
   let total = show (P.total pagination)
@@ -26,8 +26,8 @@ resultsPaginationView pagination = do
         H.em " of "
         H.strong (toHtml total)
     H.li ! A.class_ (if P.isFirstPage pagination then "disabled" else "") $
-      H.a ! A.href (toValue ("/characters?offset=" ++ previousOffset)) $
+      H.a ! A.href (toValue (rootPath ++ "?offset=" ++ previousOffset)) $
         "Previous"
     H.li ! A.class_ (if P.isLastPage pagination then "disabled" else "") $
-      H.a ! A.href (toValue ("/characters?offset=" ++ nextOffset)) $
+      H.a ! A.href (toValue (rootPath ++ "?offset=" ++ nextOffset)) $
         "Next"
