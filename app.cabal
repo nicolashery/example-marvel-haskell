@@ -17,14 +17,18 @@ executable          app
       , Helpers.PathInfo
       , Models.Character
       , Models.Comic
+      , Models.Image
       , Models.Pagination
+      , Models.Url
       , Services.Marvel
+      , Views.Components.CharacterDetails
       , Views.Components.CharactersList
       , Views.Components.ComicsList
       , Views.Components.MainFooter
       , Views.Components.MainNavigation
       , Views.Components.ResultsPagination
       , Views.Layout
+      , Views.Pages.Character
       , Views.Pages.Characters
       , Views.Pages.Comics
       , Views.Pages.Home

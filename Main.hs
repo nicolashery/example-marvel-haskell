@@ -12,13 +12,14 @@ import Web.Scotty.Trans (ScottyT, scottyT, get, middleware)
 import Config (ConfigM, getConfig, runConfigM)
 import qualified Config as Cfg
 import Controllers.Home (getHome)
-import Controllers.Characters (getCharacters)
+import Controllers.Characters (getCharacters, getCharacter)
 import Controllers.Comics (getComics)
 
 router :: ScottyT TL.Text ConfigM ()
 router = do
   get "/" getHome
   get "/characters" getCharacters
+  get "/characters/:id" getCharacter
   get "/comics" getComics
 
 application :: ScottyT TL.Text ConfigM ()

@@ -1,13 +1,16 @@
 {-# LANGUAGE NoImplicitPrelude #-}
 {-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE ScopedTypeVariables #-}
 
 module Services.Marvel
   ( PaginationOptions(..)
   , CharactersResponse(..)
   , ComicsResponse(..)
+  , CharacterResponse(..)
   , defaultPaginationOptions
   , findAllCharacters
   , findAllComics
+  , findCharacter
   ) where
 
 import BasicPrelude
@@ -18,6 +21,7 @@ import Control.Monad.Reader (asks)
 import Data.Aeson (FromJSON(..), Value(Object), eitherDecode)
 import Data.Aeson.Types ((.:))
 import Data.Digest.Pure.MD5 (md5)
+import qualified Data.Text as T
 import qualified Data.Text.Lazy as TL
 import qualified Data.Text.Lazy.Encoding as TLE
 import Data.Time.Clock.POSIX (getPOSIXTime)
@@ -80,6 +84,19 @@ instance FromJSON ComicsResponse where
       }
   parseJSON _ = mzero
 
+data CharacterResponse = CharacterResponse
+  { character :: Character
+  } deriving (Show)
+
+instance FromJSON CharacterResponse where
+  parseJSON (Object o) = do
+    _data <- o .: "data"
+    _results :: [Character] <- _data .: "results"
+    case _results of
+      [] -> fail "expected 'data.results' to be a non-empty list"
+      (x:_) -> return CharacterResponse { character=x }
+  parseJSON _ = mzero
+
 data PaginationOptions = PaginationOptions
   { limit :: Int
   , offset :: Int
@@ -134,3 +151,15 @@ findAllComics paginationOptions = do
   let result = eitherDecode (r ^. responseBody)
   return result
 
+findCharacter :: Int -> ConfigM (Either String CharacterResponse)
+findCharacter characterId = do
+  publicKey <- asks Cfg.marvelPublicKey
+  ts <- liftIO getTimestamp
+  apiHash <- createHash ts
+  let opts = defaults & param "ts" .~ [show ts]
+                      & param "apikey" .~ [publicKey]
+                      & param "hash" .~ [apiHash]
+  let url = "http://gateway.marvel.com/v1/public/characters/" ++ show characterId
+  r <- liftIO (getWith opts (T.unpack url))
+  let result = eitherDecode (r ^. responseBody)
+  return result

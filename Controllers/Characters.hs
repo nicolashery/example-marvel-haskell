@@ -2,7 +2,10 @@
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE ScopedTypeVariables #-}
 
-module Controllers.Characters (getCharacters) where
+module Controllers.Characters
+  ( getCharacters
+  , getCharacter
+  ) where
 
 import BasicPrelude
 
@@ -13,12 +16,15 @@ import Web.Scotty.Trans (ActionT, text, html, param, request, rescue)
 import Config (ConfigM)
 import Helpers.PageTitle (makePageTitle)
 import Helpers.PathInfo (getRootPath)
+import qualified Models.Character as C
 import Services.Marvel
   ( findAllCharacters
   , defaultPaginationOptions
   , PaginationOptions
+  , findCharacter
   )
 import qualified Services.Marvel as Mvl
+import Views.Pages.Character (characterPageView)
 import Views.Pages.Characters (charactersPageView)
 
 getCharacters :: ActionT TL.Text ConfigM ()
@@ -42,3 +48,19 @@ getPaginationOptions _offset = Mvl.PaginationOptions
   { Mvl.limit=Mvl.limit defaultPaginationOptions
   , Mvl.offset=_offset
   }
+
+getCharacter :: ActionT TL.Text ConfigM ()
+getCharacter = do
+  _id :: Int <- param "id"
+  req <- request
+  let rootPath = getRootPath req
+  result <- lift (findCharacter _id)
+  case result of
+    Left err ->
+      text (TL.pack err)
+    Right response ->
+      let characterName = C.name (Mvl.character response)
+          pageTitle = makePageTitle (Just characterName)
+      in html (renderHtml (characterPageView
+        rootPath pageTitle (Mvl.character response)
+      ))
