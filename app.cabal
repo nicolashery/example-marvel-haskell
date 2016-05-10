@@ -11,18 +11,22 @@ executable          app
     other-modules:
         Config
       , Controllers.Characters
+      , Controllers.Comics
       , Controllers.Home
       , Helpers.PageTitle
       , Helpers.PathInfo
       , Models.Character
+      , Models.Comic
       , Models.Pagination
       , Services.Marvel
       , Views.Components.CharactersList
+      , Views.Components.ComicsList
       , Views.Components.MainFooter
       , Views.Components.MainNavigation
       , Views.Components.ResultsPagination
       , Views.Layout
       , Views.Pages.Characters
+      , Views.Pages.Comics
       , Views.Pages.Home
     build-depends:
         base >= 4 && < 5

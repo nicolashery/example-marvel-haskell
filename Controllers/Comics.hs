@@ -2,7 +2,7 @@
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE ScopedTypeVariables #-}
 
-module Controllers.Characters (getCharacters) where
+module Controllers.Comics (getComics) where
 
 import BasicPrelude
 
@@ -14,27 +14,27 @@ import Config (ConfigM)
 import Helpers.PageTitle (makePageTitle)
 import Helpers.PathInfo (getRootPath)
 import Services.Marvel
-  ( findAllCharacters
+  ( findAllComics
   , defaultPaginationOptions
   , PaginationOptions
   )
 import qualified Services.Marvel as Mvl
-import Views.Pages.Characters (charactersPageView)
+import Views.Pages.Comics (comicsPageView)
 
-getCharacters :: ActionT TL.Text ConfigM ()
-getCharacters = do
+getComics :: ActionT TL.Text ConfigM ()
+getComics = do
   _offset :: Int <- param "offset" `rescue` (\_ -> return 0)
   let paginationOptions = getPaginationOptions _offset
   req <- request
   let rootPath = getRootPath req
-  let pageTitle = makePageTitle (Just "Characters")
-  result <- lift (findAllCharacters paginationOptions)
+  let pageTitle = makePageTitle (Just "Comics")
+  result <- lift (findAllComics paginationOptions)
   case result of
     Left err ->
       text (TL.pack err)
     Right response ->
-      html (renderHtml (charactersPageView
-        rootPath pageTitle (Mvl.charactersPagination response) (Mvl.characters response)
+      html (renderHtml (comicsPageView
+        rootPath pageTitle (Mvl.comicsPagination response) (Mvl.comics response)
       ))
 
 getPaginationOptions :: Int -> PaginationOptions
