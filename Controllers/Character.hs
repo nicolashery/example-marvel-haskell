@@ -2,9 +2,9 @@
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE ScopedTypeVariables #-}
 
-module Controllers.Comics
-  ( getComics
-  , getComic
+module Controllers.Character
+  ( getCharacters
+  , getCharacter
   ) where
 
 import BasicPrelude
@@ -16,31 +16,31 @@ import Web.Scotty.Trans (ActionT, text, html, param, request, rescue)
 import Config (ConfigM)
 import Helpers.PageTitle (makePageTitle)
 import Helpers.PathInfo (getRootPath)
-import qualified Models.Comic as C
+import qualified Models.Character as C
 import Services.Marvel
-  ( findAllComics
+  ( findAllCharacters
   , defaultPaginationOptions
   , PaginationOptions
-  , findComic
+  , findCharacter
   )
 import qualified Services.Marvel as Mvl
-import Views.Pages.Comic (comicPageView)
-import Views.Pages.Comics (comicsPageView)
+import Views.Pages.Character (characterPageView)
+import Views.Pages.Characters (charactersPageView)
 
-getComics :: ActionT TL.Text ConfigM ()
-getComics = do
+getCharacters :: ActionT TL.Text ConfigM ()
+getCharacters = do
   _offset :: Int <- param "offset" `rescue` (\_ -> return 0)
   let paginationOptions = getPaginationOptions _offset
   req <- request
   let rootPath = getRootPath req
-  let pageTitle = makePageTitle (Just "Comics")
-  result <- lift (findAllComics paginationOptions)
+  let pageTitle = makePageTitle (Just "Characters")
+  result <- lift (findAllCharacters paginationOptions)
   case result of
     Left err ->
       text (TL.pack err)
     Right response ->
-      html (renderHtml (comicsPageView
-        rootPath pageTitle (Mvl.comicsPagination response) (Mvl.comics response)
+      html (renderHtml (charactersPageView
+        rootPath pageTitle (Mvl.charactersPagination response) (Mvl.characters response)
       ))
 
 getPaginationOptions :: Int -> PaginationOptions
@@ -49,18 +49,18 @@ getPaginationOptions _offset = Mvl.PaginationOptions
   , Mvl.offset=_offset
   }
 
-getComic :: ActionT TL.Text ConfigM ()
-getComic = do
+getCharacter :: ActionT TL.Text ConfigM ()
+getCharacter = do
   _id :: Int <- param "id"
   req <- request
   let rootPath = getRootPath req
-  result <- lift (findComic _id)
+  result <- lift (findCharacter _id)
   case result of
     Left err ->
       text (TL.pack err)
     Right response ->
-      let comicName = C.title (Mvl.comic response)
-          pageTitle = makePageTitle (Just comicName)
-      in html (renderHtml (comicPageView
-        rootPath pageTitle (Mvl.comic response)
+      let characterName = C.name (Mvl.character response)
+          pageTitle = makePageTitle (Just characterName)
+      in html (renderHtml (characterPageView
+        rootPath pageTitle (Mvl.character response)
       ))

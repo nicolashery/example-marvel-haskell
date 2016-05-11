@@ -10,8 +10,8 @@ executable          app
     extensions:     OverloadedStrings
     other-modules:
         Config
-      , Controllers.Characters
-      , Controllers.Comics
+      , Controllers.Character
+      , Controllers.Comic
       , Controllers.Home
       , Helpers.PageTitle
       , Helpers.PathInfo

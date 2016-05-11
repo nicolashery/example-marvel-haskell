@@ -12,8 +12,8 @@ import Web.Scotty.Trans (ScottyT, scottyT, get, middleware)
 import Config (ConfigM, getConfig, runConfigM)
 import qualified Config as Cfg
 import Controllers.Home (getHome)
-import Controllers.Characters (getCharacters, getCharacter)
-import Controllers.Comics (getComics, getComic)
+import Controllers.Character (getCharacters, getCharacter)
+import Controllers.Comic (getComics, getComic)
 
 router :: ScottyT TL.Text ConfigM ()
 router = do
