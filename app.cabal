@@ -23,6 +23,7 @@ executable          app
       , Services.Marvel
       , Views.Components.CharacterDetails
       , Views.Components.CharactersList
+      , Views.Components.ComicDetails
       , Views.Components.ComicsList
       , Views.Components.MainFooter
       , Views.Components.MainNavigation
@@ -30,6 +31,7 @@ executable          app
       , Views.Layout
       , Views.Pages.Character
       , Views.Pages.Characters
+      , Views.Pages.Comic
       , Views.Pages.Comics
       , Views.Pages.Home
     build-depends:

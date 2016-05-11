@@ -2,7 +2,10 @@
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE ScopedTypeVariables #-}
 
-module Controllers.Comics (getComics) where
+module Controllers.Comics
+  ( getComics
+  , getComic
+  ) where
 
 import BasicPrelude
 
@@ -13,12 +16,15 @@ import Web.Scotty.Trans (ActionT, text, html, param, request, rescue)
 import Config (ConfigM)
 import Helpers.PageTitle (makePageTitle)
 import Helpers.PathInfo (getRootPath)
+import qualified Models.Comic as C
 import Services.Marvel
   ( findAllComics
   , defaultPaginationOptions
   , PaginationOptions
+  , findComic
   )
 import qualified Services.Marvel as Mvl
+import Views.Pages.Comic (comicPageView)
 import Views.Pages.Comics (comicsPageView)
 
 getComics :: ActionT TL.Text ConfigM ()
@@ -42,3 +48,19 @@ getPaginationOptions _offset = Mvl.PaginationOptions
   { Mvl.limit=Mvl.limit defaultPaginationOptions
   , Mvl.offset=_offset
   }
+
+getComic :: ActionT TL.Text ConfigM ()
+getComic = do
+  _id :: Int <- param "id"
+  req <- request
+  let rootPath = getRootPath req
+  result <- lift (findComic _id)
+  case result of
+    Left err ->
+      text (TL.pack err)
+    Right response ->
+      let comicName = C.title (Mvl.comic response)
+          pageTitle = makePageTitle (Just comicName)
+      in html (renderHtml (comicPageView
+        rootPath pageTitle (Mvl.comic response)
+      ))

@@ -13,7 +13,7 @@ import Config (ConfigM, getConfig, runConfigM)
 import qualified Config as Cfg
 import Controllers.Home (getHome)
 import Controllers.Characters (getCharacters, getCharacter)
-import Controllers.Comics (getComics)
+import Controllers.Comics (getComics, getComic)
 
 router :: ScottyT TL.Text ConfigM ()
 router = do
@@ -21,6 +21,7 @@ router = do
   get "/characters" getCharacters
   get "/characters/:id" getCharacter
   get "/comics" getComics
+  get "/comics/:id" getComic
 
 application :: ScottyT TL.Text ConfigM ()
 application = do

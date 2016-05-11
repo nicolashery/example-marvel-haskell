@@ -1,7 +1,11 @@
 {-# LANGUAGE NoImplicitPrelude #-}
+{-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE DeriveGeneric #-}
 
-module Models.Url (Url(..)) where
+module Models.Url
+  ( Url(..)
+  , isDetailUrl
+  ) where
 
 import BasicPrelude
 
@@ -21,3 +25,6 @@ instance ToJSON Url where
 instance FromJSON Url where
   parseJSON = genericParseJSON defaultOptions {
                 fieldLabelModifier = drop 1 }
+
+isDetailUrl :: Url -> Bool
+isDetailUrl url = _type url == "detail"

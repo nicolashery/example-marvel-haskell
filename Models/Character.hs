@@ -14,7 +14,7 @@ import Data.Aeson (FromJSON(..), ToJSON(..))
 import GHC.Generics (Generic)
 
 import Models.Image (Image)
-import Models.Url (Url)
+import Models.Url (Url, isDetailUrl)
 import qualified Models.Url as U
 
 data Character = Character
@@ -35,9 +35,6 @@ getMarvelUrl character =
   in case maybeUrl of
     Nothing -> defaultUrl
     Just detailUrl -> U._url detailUrl
-
-isDetailUrl :: Url -> Bool
-isDetailUrl url = U._type url == "detail"
 
 getNonEmptyDescription :: Character -> Maybe Text
 getNonEmptyDescription character =

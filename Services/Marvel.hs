@@ -7,10 +7,12 @@ module Services.Marvel
   , CharactersResponse(..)
   , ComicsResponse(..)
   , CharacterResponse(..)
+  , ComicResponse(..)
   , defaultPaginationOptions
   , findAllCharacters
   , findAllComics
   , findCharacter
+  , findComic
   ) where
 
 import BasicPrelude
@@ -97,6 +99,19 @@ instance FromJSON CharacterResponse where
       (x:_) -> return CharacterResponse { character=x }
   parseJSON _ = mzero
 
+data ComicResponse = ComicResponse
+  { comic :: Comic
+  } deriving (Show)
+
+instance FromJSON ComicResponse where
+  parseJSON (Object o) = do
+    _data <- o .: "data"
+    _results :: [Comic] <- _data .: "results"
+    case _results of
+      [] -> fail "expected 'data.results' to be a non-empty list"
+      (x:_) -> return ComicResponse { comic=x }
+  parseJSON _ = mzero
+
 data PaginationOptions = PaginationOptions
   { limit :: Int
   , offset :: Int
@@ -160,6 +175,19 @@ findCharacter characterId = do
                       & param "apikey" .~ [publicKey]
                       & param "hash" .~ [apiHash]
   let url = "http://gateway.marvel.com/v1/public/characters/" ++ show characterId
+  r <- liftIO (getWith opts (T.unpack url))
+  let result = eitherDecode (r ^. responseBody)
+  return result
+
+findComic :: Int -> ConfigM (Either String ComicResponse)
+findComic comicId = do
+  publicKey <- asks Cfg.marvelPublicKey
+  ts <- liftIO getTimestamp
+  apiHash <- createHash ts
+  let opts = defaults & param "ts" .~ [show ts]
+                      & param "apikey" .~ [publicKey]
+                      & param "hash" .~ [apiHash]
+  let url = "http://gateway.marvel.com/v1/public/comics/" ++ show comicId
   r <- liftIO (getWith opts (T.unpack url))
   let result = eitherDecode (r ^. responseBody)
   return result
