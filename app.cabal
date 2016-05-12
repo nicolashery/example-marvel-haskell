@@ -16,7 +16,11 @@ executable          app
       , Helpers.PageTitle
       , Helpers.PathInfo
       , Models.Character
+      , Models.CharacterList
+      , Models.CharacterSummary
       , Models.Comic
+      , Models.ComicList
+      , Models.ComicSummary
       , Models.Image
       , Models.Pagination
       , Models.Url
