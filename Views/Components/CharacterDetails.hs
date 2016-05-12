@@ -9,8 +9,16 @@ import Text.Blaze.Html5 (Html, toHtml, toValue, (!))
 import qualified Text.Blaze.Html5 as H
 import qualified Text.Blaze.Html5.Attributes as A
 
-import Models.Character (Character, getMarvelUrl, getNonEmptyDescription)
+import Models.Character
+  ( Character
+  , getMarvelUrl
+  , getNonEmptyDescription
+  , hasComics
+  , getComics
+  )
 import qualified Models.Character as C
+import Models.ComicSummary (ComicSummary, getId)
+import qualified Models.ComicSummary as CS
 import Models.Image (getPortraitXLarge)
 
 characterDetailsView :: Character -> Html
@@ -26,6 +34,9 @@ characterDetailsView character =
               ! A.target "_blank" $
             "More details on Marvel.com"
         characterDescriptionView character
+        if hasComics character
+          then characterComicsView character
+          else mempty
 
 characterDescriptionView :: Character -> Html
 characterDescriptionView character =
@@ -34,3 +45,19 @@ characterDescriptionView character =
     Just description -> do
       H.h4 "Description"
       H.p (toHtml description)
+
+characterComicsView :: Character -> Html
+characterComicsView character = do
+  H.h4 "Comics"
+  H.ul $
+    mapM_ characterComicView (getComics character)
+
+characterComicView :: ComicSummary -> Html
+characterComicView comicSummary =
+  H.li $
+    case getId comicSummary of
+      Just comicId ->
+        H.a ! A.href ("/comics/" <> toValue comicId) $
+          toHtml (CS.name comicSummary)
+      Nothing ->
+        toHtml (CS.name comicSummary)

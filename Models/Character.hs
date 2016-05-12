@@ -6,6 +6,8 @@ module Models.Character
   ( Character(..)
   , getMarvelUrl
   , getNonEmptyDescription
+  , hasComics
+  , getComics
   ) where
 
 import BasicPrelude hiding (id)
@@ -13,6 +15,9 @@ import BasicPrelude hiding (id)
 import Data.Aeson (FromJSON(..), ToJSON(..))
 import GHC.Generics (Generic)
 
+import Models.ComicList (ComicList)
+import qualified Models.ComicList as CL
+import Models.ComicSummary (ComicSummary)
 import Models.Image (Image)
 import Models.Url (Url, isDetailUrl)
 import qualified Models.Url as U
@@ -23,6 +28,7 @@ data Character = Character
   , description :: Maybe Text
   , urls :: [Url]
   , thumbnail :: Image
+  , comics :: ComicList
   } deriving (Show, Generic)
 
 instance FromJSON Character
@@ -42,3 +48,9 @@ getNonEmptyDescription character =
     Nothing -> Nothing
     Just "" -> Nothing
     Just desc -> Just desc
+
+hasComics :: Character -> Bool
+hasComics character = CL.available (comics character) > 0
+
+getComics :: Character -> [ComicSummary]
+getComics character = CL.items (comics character)

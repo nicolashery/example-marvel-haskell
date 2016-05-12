@@ -51,3 +51,4 @@ executable          app
       , wai-middleware-static
       , blaze-html
       , blaze-markup
+      , regex-pcre
