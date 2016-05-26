@@ -41,6 +41,7 @@ executable          app
       , Views.Pages.Characters
       , Views.Pages.Comic
       , Views.Pages.Comics
+      , Views.Pages.Error
       , Views.Pages.Home
     build-depends:
         base >= 4 && < 5
@@ -60,3 +61,4 @@ executable          app
       , blaze-html
       , blaze-markup
       , regex-pcre
+      , bytestring

@@ -11,7 +11,7 @@ import BasicPrelude
 
 import qualified Data.Text.Lazy as TL
 import Text.Blaze.Html.Renderer.Text (renderHtml)
-import Web.Scotty.Trans (ActionT, text, html, param, request, rescue)
+import Web.Scotty.Trans (ActionT, html, param, request, rescue)
 
 import Config (ConfigM)
 import Helpers.PageTitle (makePageTitle)
@@ -26,6 +26,7 @@ import Services.Marvel
 import qualified Services.Marvel as Mvl
 import Views.Pages.Character (characterPageView)
 import Views.Pages.Characters (charactersPageView)
+import Views.Pages.Error (errorView)
 
 getCharacters :: ActionT TL.Text ConfigM ()
 getCharacters = do
@@ -37,7 +38,7 @@ getCharacters = do
   result <- lift (findAllCharacters paginationOptions)
   case result of
     Left err ->
-      text (TL.pack err)
+      html (renderHtml (errorView rootPath (show err)))
     Right response ->
       html (renderHtml (charactersPageView
         rootPath pageTitle (Mvl.charactersPagination response) (Mvl.characters response)
@@ -57,7 +58,7 @@ getCharacter = do
   result <- lift (findCharacter _id)
   case result of
     Left err ->
-      text (TL.pack err)
+      html (renderHtml (errorView rootPath (show err)))
     Right response ->
       let characterName = C.name (Mvl.character response)
           pageTitle = makePageTitle (Just characterName)

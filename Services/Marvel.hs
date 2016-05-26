@@ -26,6 +26,7 @@ import Control.Lens ((&), (.~), (^.))
 import Control.Monad.Reader (asks)
 import Data.Aeson (FromJSON(..), Value(Object), eitherDecode)
 import Data.Aeson.Types ((.:))
+import qualified Data.ByteString.Lazy as BL
 import Data.Digest.Pure.MD5 (md5)
 import qualified Data.Text as T
 import qualified Data.Text.Lazy as TL
@@ -44,6 +45,12 @@ import Models.FeaturedComic (FeaturedComic)
 import qualified Models.FeaturedComic as FCo
 import Models.Pagination (Pagination)
 import qualified Models.Pagination as P
+
+type StatusCode = Int
+
+data MarvelError = ApiError StatusCode Text
+                 | JsonDecodeError Text
+                 deriving (Show)
 
 data CharactersResponse = CharactersResponse
   { characters :: [Character]
@@ -151,7 +158,14 @@ createHash ts = do
   let apiHash = show (md5 (TLE.encodeUtf8 (TL.fromStrict payload)))
   return apiHash
 
-findAllCharacters :: PaginationOptions -> ConfigM (Either String CharactersResponse)
+-- Wrap `Data.Aeson.eitherDecode` to use our own custom error type
+eitherErrorDecode :: FromJSON a => BL.ByteString -> Either MarvelError a
+eitherErrorDecode byteString =
+  case eitherDecode byteString of
+    Left errDescription -> Left (JsonDecodeError (T.pack errDescription))
+    Right result -> Right result
+
+findAllCharacters :: PaginationOptions -> ConfigM (Either MarvelError CharactersResponse)
 findAllCharacters paginationOptions = do
   publicKey <- asks Cfg.marvelPublicKey
   ts <- liftIO getTimestamp
@@ -164,10 +178,10 @@ findAllCharacters paginationOptions = do
                       & param "limit" .~ [show _limit]
                       & param "offset" .~ [show _offset]
   r <- liftIO (getWith opts "http://gateway.marvel.com/v1/public/characters")
-  let result = eitherDecode (r ^. responseBody)
+  let result = eitherErrorDecode (r ^. responseBody)
   return result
 
-findAllComics :: PaginationOptions -> ConfigM (Either String ComicsResponse)
+findAllComics :: PaginationOptions -> ConfigM (Either MarvelError ComicsResponse)
 findAllComics paginationOptions = do
   publicKey <- asks Cfg.marvelPublicKey
   ts <- liftIO getTimestamp
@@ -180,10 +194,10 @@ findAllComics paginationOptions = do
                       & param "limit" .~ [show _limit]
                       & param "offset" .~ [show _offset]
   r <- liftIO (getWith opts "http://gateway.marvel.com/v1/public/comics")
-  let result = eitherDecode (r ^. responseBody)
+  let result = eitherErrorDecode (r ^. responseBody)
   return result
 
-findCharacter :: Int -> ConfigM (Either String CharacterResponse)
+findCharacter :: Int -> ConfigM (Either MarvelError CharacterResponse)
 findCharacter characterId = do
   publicKey <- asks Cfg.marvelPublicKey
   ts <- liftIO getTimestamp
@@ -193,10 +207,10 @@ findCharacter characterId = do
                       & param "hash" .~ [apiHash]
   let url = "http://gateway.marvel.com/v1/public/characters/" ++ show characterId
   r <- liftIO (getWith opts (T.unpack url))
-  let result = eitherDecode (r ^. responseBody)
+  let result = eitherErrorDecode (r ^. responseBody)
   return result
 
-findComic :: Int -> ConfigM (Either String ComicResponse)
+findComic :: Int -> ConfigM (Either MarvelError ComicResponse)
 findComic comicId = do
   publicKey <- asks Cfg.marvelPublicKey
   ts <- liftIO getTimestamp
@@ -206,7 +220,7 @@ findComic comicId = do
                       & param "hash" .~ [apiHash]
   let url = "http://gateway.marvel.com/v1/public/comics/" ++ show comicId
   r <- liftIO (getWith opts (T.unpack url))
-  let result = eitherDecode (r ^. responseBody)
+  let result = eitherErrorDecode (r ^. responseBody)
   return result
 
 mockFeaturedCharacters :: [FeaturedCharacter]
@@ -245,7 +259,7 @@ mockFeaturedCharacters =
     }
   ]
 
-fetchFeaturedCharacters :: ConfigM (Either String FeaturedCharactersResponse)
+fetchFeaturedCharacters :: ConfigM (Either MarvelError FeaturedCharactersResponse)
 fetchFeaturedCharacters =
   -- Endpoint doesn't exist, so fake it
   let response = FeaturedCharactersResponse
@@ -288,7 +302,7 @@ mockFeaturedComics =
     }
   ]
 
-fetchFeaturedComics :: ConfigM (Either String FeaturedComicsResponse)
+fetchFeaturedComics :: ConfigM (Either MarvelError FeaturedComicsResponse)
 fetchFeaturedComics =
   -- Endpoint doesn't exist, so fake it
   let response = FeaturedComicsResponse
