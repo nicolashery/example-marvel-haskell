@@ -22,6 +22,7 @@ executable          app
       , Models.ComicList
       , Models.ComicSummary
       , Models.FeaturedCharacter
+      , Models.FeaturedComic
       , Models.Image
       , Models.Pagination
       , Models.Url
@@ -31,6 +32,7 @@ executable          app
       , Views.Components.ComicDetails
       , Views.Components.ComicsList
       , Views.Components.FeaturedCharacters
+      , Views.Components.FeaturedComics
       , Views.Components.MainFooter
       , Views.Components.MainNavigation
       , Views.Components.ResultsPagination

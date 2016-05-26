@@ -10,11 +10,13 @@ import qualified Text.Blaze.Html5 as H
 import qualified Text.Blaze.Html5.Attributes as A
 
 import Models.FeaturedCharacter (FeaturedCharacter)
+import Models.FeaturedComic (FeaturedComic)
 import Views.Components.FeaturedCharacters (featuredCharactersView)
+import Views.Components.FeaturedComics (featuredComicsView)
 import Views.Layout (layoutView)
 
-homePageView :: Text -> Text -> [FeaturedCharacter] -> Html
-homePageView rootPath pageTitle featuredCharacters =
+homePageView :: Text -> Text -> [FeaturedCharacter] -> [FeaturedComic] -> Html
+homePageView rootPath pageTitle featuredCharacters featuredComics =
   layoutView rootPath pageTitle $ do
     H.div ! A.class_ "jumbotron" $ do
       H.h1 "Marvel App"
@@ -27,3 +29,4 @@ homePageView rootPath pageTitle featuredCharacters =
           H.span " "
           H.a ! A.class_ "btn btn-primary btn-lg" ! A.href "/comics" $ "Browse comics"
     featuredCharactersView featuredCharacters
+    featuredComicsView featuredComics

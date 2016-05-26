@@ -12,7 +12,7 @@ import Web.Scotty.Trans (ActionT, html, request)
 import Config (ConfigM)
 import Helpers.PageTitle (makePageTitle)
 import Helpers.PathInfo (getRootPath)
-import Services.Marvel (fetchFeaturedCharacters)
+import Services.Marvel (fetchFeaturedCharacters, fetchFeaturedComics)
 import qualified Services.Marvel as Mvl
 import Views.Pages.Home (homePageView)
 
@@ -25,4 +25,9 @@ getHome = do
   let featuredCharacters =
         -- Default to empty list if error
         either (\_ -> []) Mvl.featuredCharacters featuredCharactersResult
-  html (renderHtml (homePageView rootPath pageTitle featuredCharacters))
+  featuredComicsResult <- lift fetchFeaturedComics
+  let featuredComics =
+        either (\_ -> []) Mvl.featuredComics featuredComicsResult
+  html (renderHtml (homePageView
+      rootPath pageTitle featuredCharacters featuredComics
+    ))

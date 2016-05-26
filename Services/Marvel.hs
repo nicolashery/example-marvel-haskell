@@ -9,12 +9,14 @@ module Services.Marvel
   , CharacterResponse(..)
   , ComicResponse(..)
   , FeaturedCharactersResponse(..)
+  , FeaturedComicsResponse(..)
   , defaultPaginationOptions
   , findAllCharacters
   , findAllComics
   , findCharacter
   , findComic
   , fetchFeaturedCharacters
+  , fetchFeaturedComics
   ) where
 
 import BasicPrelude
@@ -38,6 +40,8 @@ import Models.Comic (Comic)
 import qualified Models.Image as I
 import Models.FeaturedCharacter (FeaturedCharacter)
 import qualified Models.FeaturedCharacter as FCh
+import Models.FeaturedComic (FeaturedComic)
+import qualified Models.FeaturedComic as FCo
 import Models.Pagination (Pagination)
 import qualified Models.Pagination as P
 
@@ -119,6 +123,10 @@ instance FromJSON ComicResponse where
 
 data FeaturedCharactersResponse = FeaturedCharactersResponse
   { featuredCharacters :: [FeaturedCharacter]
+  } deriving (Show)
+
+data FeaturedComicsResponse = FeaturedComicsResponse
+  { featuredComics :: [FeaturedComic]
   } deriving (Show)
 
 data PaginationOptions = PaginationOptions
@@ -242,4 +250,47 @@ fetchFeaturedCharacters =
   -- Endpoint doesn't exist, so fake it
   let response = FeaturedCharactersResponse
         { featuredCharacters=mockFeaturedCharacters }
+  in return (Right response)
+
+mockFeaturedComics :: [FeaturedComic]
+mockFeaturedComics =
+  [ FCo.FeaturedComic
+    { FCo.id=57382
+    , FCo.name="Black Panther (2016) #1"
+    , FCo.thumbnail=I.Image
+      { I.path="http://i.annihil.us/u/prod/marvel/i/mg/c/80/567065cfebad5"
+      , I.extension="jpg"
+      }
+    }
+  , FCo.FeaturedComic
+    { FCo.id=55398
+    , FCo.name="Darth Vader (2015) #18"
+    , FCo.thumbnail=I.Image
+      { I.path="http://i.annihil.us/u/prod/marvel/i/mg/1/a0/56f1836f99068"
+      , I.extension="jpg"
+      }
+    }
+  , FCo.FeaturedComic
+    { FCo.id=55766
+    , FCo.name="Star Wars (2015) #17"
+    , FCo.thumbnail=I.Image
+      { I.path="http://i.annihil.us/u/prod/marvel/i/mg/9/b0/56e71aef71d19"
+      , I.extension="jpg"
+      }
+    }
+  , FCo.FeaturedComic
+    { FCo.id=55360
+    , FCo.name="All-New, All-Different Avengers (2015) #7"
+    , FCo.thumbnail=I.Image
+      { I.path="http://i.annihil.us/u/prod/marvel/i/mg/3/80/56e7074c31b84"
+      , I.extension="jpg"
+      }
+    }
+  ]
+
+fetchFeaturedComics :: ConfigM (Either String FeaturedComicsResponse)
+fetchFeaturedComics =
+  -- Endpoint doesn't exist, so fake it
+  let response = FeaturedComicsResponse
+        { featuredComics=mockFeaturedComics }
   in return (Right response)
