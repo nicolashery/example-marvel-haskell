@@ -12,6 +12,8 @@ import Web.Scotty.Trans (ActionT, html, request)
 import Config (ConfigM)
 import Helpers.PageTitle (makePageTitle)
 import Helpers.PathInfo (getRootPath)
+import Services.Marvel (fetchFeaturedCharacters)
+import qualified Services.Marvel as Mvl
 import Views.Pages.Home (homePageView)
 
 getHome :: ActionT TL.Text ConfigM ()
@@ -19,4 +21,8 @@ getHome = do
   req <- request
   let rootPath = getRootPath req
   let pageTitle = makePageTitle Nothing
-  html (renderHtml (homePageView rootPath pageTitle))
+  featuredCharactersResult <- lift fetchFeaturedCharacters
+  let featuredCharacters =
+        -- Default to empty list if error
+        either (\_ -> []) Mvl.featuredCharacters featuredCharactersResult
+  html (renderHtml (homePageView rootPath pageTitle featuredCharacters))

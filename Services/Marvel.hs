@@ -8,11 +8,13 @@ module Services.Marvel
   , ComicsResponse(..)
   , CharacterResponse(..)
   , ComicResponse(..)
+  , FeaturedCharactersResponse(..)
   , defaultPaginationOptions
   , findAllCharacters
   , findAllComics
   , findCharacter
   , findComic
+  , fetchFeaturedCharacters
   ) where
 
 import BasicPrelude
@@ -33,6 +35,9 @@ import Config (ConfigM)
 import qualified Config as Cfg
 import Models.Character (Character)
 import Models.Comic (Comic)
+import qualified Models.Image as I
+import Models.FeaturedCharacter (FeaturedCharacter)
+import qualified Models.FeaturedCharacter as FCh
 import Models.Pagination (Pagination)
 import qualified Models.Pagination as P
 
@@ -111,6 +116,10 @@ instance FromJSON ComicResponse where
       [] -> fail "expected 'data.results' to be a non-empty list"
       (x:_) -> return ComicResponse { comic=x }
   parseJSON _ = mzero
+
+data FeaturedCharactersResponse = FeaturedCharactersResponse
+  { featuredCharacters :: [FeaturedCharacter]
+  } deriving (Show)
 
 data PaginationOptions = PaginationOptions
   { limit :: Int
@@ -191,3 +200,46 @@ findComic comicId = do
   r <- liftIO (getWith opts (T.unpack url))
   let result = eitherDecode (r ^. responseBody)
   return result
+
+mockFeaturedCharacters :: [FeaturedCharacter]
+mockFeaturedCharacters =
+  [ FCh.FeaturedCharacter
+    { FCh.id=1009610
+    , FCh.name="Spider-Man"
+    , FCh.thumbnail=I.Image
+      { I.path="http://i.annihil.us/u/prod/marvel/i/mg/3/50/526548a343e4b"
+      , I.extension="jpg"
+      }
+    }
+  , FCh.FeaturedCharacter
+    { FCh.id=1010338
+    , FCh.name="Captain Marvel (Carol Danvers)"
+    , FCh.thumbnail=I.Image
+      { I.path="http://i.annihil.us/u/prod/marvel/i/mg/6/80/5269608c1be7a"
+      , I.extension="jpg"
+      }
+    }
+  , FCh.FeaturedCharacter
+    { FCh.id=1009351
+    , FCh.name="Hulk"
+    , FCh.thumbnail=I.Image
+      { I.path="http://i.annihil.us/u/prod/marvel/i/mg/5/a0/538615ca33ab0"
+      , I.extension="jpg"
+      }
+    }
+  , FCh.FeaturedCharacter
+    { FCh.id=1009189
+    , FCh.name="Black Widow"
+    , FCh.thumbnail=I.Image
+      { I.path="http://i.annihil.us/u/prod/marvel/i/mg/f/30/50fecad1f395b"
+      , I.extension="jpg"
+      }
+    }
+  ]
+
+fetchFeaturedCharacters :: ConfigM (Either String FeaturedCharactersResponse)
+fetchFeaturedCharacters =
+  -- Endpoint doesn't exist, so fake it
+  let response = FeaturedCharactersResponse
+        { featuredCharacters=mockFeaturedCharacters }
+  in return (Right response)
