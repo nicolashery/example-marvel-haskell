@@ -27,6 +27,7 @@ import qualified Services.Marvel as Mvl
 import Views.Pages.Character (characterPageView)
 import Views.Pages.Characters (charactersPageView)
 import Views.Pages.Error (errorView)
+import Views.Pages.NotFound (notFoundView)
 
 getCharacters :: ActionT TL.Text ConfigM ()
 getCharacters = do
@@ -57,6 +58,8 @@ getCharacter = do
   let rootPath = getRootPath req
   result <- lift (findCharacter _id)
   case result of
+    Left Mvl.NotFound ->
+      html (renderHtml (notFoundView rootPath))
     Left err ->
       html (renderHtml (errorView rootPath (show err)))
     Right response ->

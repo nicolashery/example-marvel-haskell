@@ -1,9 +1,11 @@
 {-# LANGUAGE NoImplicitPrelude #-}
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE ScopedTypeVariables #-}
+{-# LANGUAGE FlexibleContexts #-}
 
 module Services.Marvel
-  ( PaginationOptions(..)
+  ( MarvelError(..)
+  , PaginationOptions(..)
   , CharactersResponse(..)
   , ComicsResponse(..)
   , CharacterResponse(..)
@@ -32,7 +34,8 @@ import qualified Data.Text as T
 import qualified Data.Text.Lazy as TL
 import qualified Data.Text.Lazy.Encoding as TLE
 import Data.Time.Clock.POSIX (getPOSIXTime)
-import Network.Wreq (defaults, param, getWith, responseBody)
+import Network.HTTP.Client (HttpException(StatusCodeException))
+import Network.Wreq (defaults, param, getWith, responseBody, statusCode)
 
 import Config (ConfigM)
 import qualified Config as Cfg
@@ -46,10 +49,8 @@ import qualified Models.FeaturedComic as FCo
 import Models.Pagination (Pagination)
 import qualified Models.Pagination as P
 
-type StatusCode = Int
-
-data MarvelError = ApiError StatusCode Text
-                 | JsonDecodeError Text
+data MarvelError = NotFound
+                 | InvalidJson Text
                  deriving (Show)
 
 data CharactersResponse = CharactersResponse
@@ -162,11 +163,20 @@ createHash ts = do
 eitherErrorDecode :: FromJSON a => BL.ByteString -> Either MarvelError a
 eitherErrorDecode byteString =
   case eitherDecode byteString of
-    Left errDescription -> Left (JsonDecodeError (T.pack errDescription))
+    Left errDescription -> Left (InvalidJson (T.pack errDescription))
     Right result -> Right result
 
+-- Use in all public functions to catch certain non-2xx API responses
+handleHttpException :: ConfigM (Either MarvelError a) -> ConfigM (Either MarvelError a)
+handleHttpException f = f `catch` httpExceptionHandler 
+
+httpExceptionHandler :: HttpException -> ConfigM (Either MarvelError a)
+httpExceptionHandler (StatusCodeException s _ _)
+  | s ^. statusCode == 404 = return (Left NotFound)
+httpExceptionHandler e = liftIO (throwIO e)
+
 findAllCharacters :: PaginationOptions -> ConfigM (Either MarvelError CharactersResponse)
-findAllCharacters paginationOptions = do
+findAllCharacters paginationOptions = handleHttpException $ do
   publicKey <- asks Cfg.marvelPublicKey
   ts <- liftIO getTimestamp
   apiHash <- createHash ts
@@ -182,7 +192,7 @@ findAllCharacters paginationOptions = do
   return result
 
 findAllComics :: PaginationOptions -> ConfigM (Either MarvelError ComicsResponse)
-findAllComics paginationOptions = do
+findAllComics paginationOptions = handleHttpException $ do
   publicKey <- asks Cfg.marvelPublicKey
   ts <- liftIO getTimestamp
   apiHash <- createHash ts
@@ -198,7 +208,7 @@ findAllComics paginationOptions = do
   return result
 
 findCharacter :: Int -> ConfigM (Either MarvelError CharacterResponse)
-findCharacter characterId = do
+findCharacter characterId = handleHttpException $ do
   publicKey <- asks Cfg.marvelPublicKey
   ts <- liftIO getTimestamp
   apiHash <- createHash ts
@@ -206,12 +216,12 @@ findCharacter characterId = do
                       & param "apikey" .~ [publicKey]
                       & param "hash" .~ [apiHash]
   let url = "http://gateway.marvel.com/v1/public/characters/" ++ show characterId
-  r <- liftIO (getWith opts (T.unpack url))
+  r <- (liftIO (getWith opts (T.unpack url)))
   let result = eitherErrorDecode (r ^. responseBody)
   return result
 
 findComic :: Int -> ConfigM (Either MarvelError ComicResponse)
-findComic comicId = do
+findComic comicId = handleHttpException $ do
   publicKey <- asks Cfg.marvelPublicKey
   ts <- liftIO getTimestamp
   apiHash <- createHash ts

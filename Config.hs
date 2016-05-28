@@ -1,6 +1,12 @@
 {-# LANGUAGE NoImplicitPrelude #-}
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
+{-# LANGUAGE InstanceSigs #-}
+{-# LANGUAGE MultiParamTypeClasses #-}
+{-# LANGUAGE RankNTypes #-}
+{-# LANGUAGE ScopedTypeVariables #-}
+{-# LANGUAGE TypeFamilies #-}
+{-# LANGUAGE UndecidableInstances #-}
 
 module Config
   ( Config(..)
@@ -11,7 +17,15 @@ module Config
 import BasicPrelude
 
 import Control.Applicative (liftA)
+import Control.Monad.Base (MonadBase)
 import Control.Monad.Reader (MonadReader, ReaderT)
+import Control.Monad.Trans.Control
+  ( liftBaseWith
+  , MonadBaseControl
+  , restoreM
+  , RunInBase
+  , StM
+  )
 import qualified Data.Text as T
 import System.Environment (getEnv)
 
@@ -23,7 +37,29 @@ data Config = Config
 
 newtype ConfigM a = ConfigM
   { runConfigM :: ReaderT Config IO a
-  } deriving (Applicative, Functor, Monad, MonadIO, MonadReader Config)
+  } deriving ( Applicative
+             , Functor
+             , Monad
+             , MonadIO
+             , MonadReader Config
+             , MonadBase IO
+             )
+
+instance MonadBaseControl IO ConfigM where
+  type StM ConfigM a = StM (ReaderT Config IO) a
+
+  liftBaseWith :: forall a. (RunInBase ConfigM IO -> IO a) -> ConfigM a
+  liftBaseWith f = ConfigM (liftBaseWith f')
+    where
+      f' :: RunInBase (ReaderT Config IO) IO -> IO a
+      f' runInReaderBase = f runInConfigBase
+        where
+          -- type RunInBase m b = forall a. m a -> b (StM m a)
+          runInConfigBase :: RunInBase ConfigM IO
+          runInConfigBase = runInReaderBase . runConfigM
+
+  restoreM :: StM ConfigM a -> ConfigM a
+  restoreM = ConfigM . restoreM
 
 getConfig :: IO Config
 getConfig = do

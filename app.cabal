@@ -62,3 +62,6 @@ executable          app
       , blaze-markup
       , regex-pcre
       , bytestring
+      , http-client
+      , transformers-base
+      , monad-control

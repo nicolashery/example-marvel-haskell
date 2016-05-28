@@ -27,6 +27,7 @@ import qualified Services.Marvel as Mvl
 import Views.Pages.Comic (comicPageView)
 import Views.Pages.Comics (comicsPageView)
 import Views.Pages.Error (errorView)
+import Views.Pages.NotFound (notFoundView)
 
 getComics :: ActionT TL.Text ConfigM ()
 getComics = do
@@ -57,6 +58,8 @@ getComic = do
   let rootPath = getRootPath req
   result <- lift (findComic _id)
   case result of
+    Left Mvl.NotFound ->
+      html (renderHtml (notFoundView rootPath))
     Left err ->
       html (renderHtml (errorView rootPath (show err)))
     Right response ->
