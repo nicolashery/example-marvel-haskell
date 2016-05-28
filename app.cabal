@@ -65,3 +65,4 @@ executable          app
       , http-client
       , transformers-base
       , monad-control
+      , http-types

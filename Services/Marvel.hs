@@ -216,7 +216,7 @@ findCharacter characterId = handleHttpException $ do
                       & param "apikey" .~ [publicKey]
                       & param "hash" .~ [apiHash]
   let url = "http://gateway.marvel.com/v1/public/characters/" ++ show characterId
-  r <- (liftIO (getWith opts (T.unpack url)))
+  r <- liftIO (getWith opts (T.unpack url))
   let result = eitherErrorDecode (r ^. responseBody)
   return result
 

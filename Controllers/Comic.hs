@@ -10,8 +10,9 @@ module Controllers.Comic
 import BasicPrelude
 
 import qualified Data.Text.Lazy as TL
+import Network.HTTP.Types (status404, status500)
 import Text.Blaze.Html.Renderer.Text (renderHtml)
-import Web.Scotty.Trans (ActionT, html, param, request, rescue)
+import Web.Scotty.Trans (ActionT, html, param, request, rescue, status)
 
 import Config (ConfigM)
 import Helpers.PageTitle (makePageTitle)
@@ -38,7 +39,8 @@ getComics = do
   let pageTitle = makePageTitle (Just "Comics")
   result <- lift (findAllComics paginationOptions)
   case result of
-    Left err ->
+    Left err -> do
+      status status500
       html (renderHtml (errorView rootPath (show err)))
     Right response ->
       html (renderHtml (comicsPageView
@@ -58,9 +60,11 @@ getComic = do
   let rootPath = getRootPath req
   result <- lift (findComic _id)
   case result of
-    Left Mvl.NotFound ->
+    Left Mvl.NotFound -> do
+      status status404
       html (renderHtml (notFoundView rootPath))
-    Left err ->
+    Left err -> do
+      status status500
       html (renderHtml (errorView rootPath (show err)))
     Right response ->
       let comicName = C.title (Mvl.comic response)
