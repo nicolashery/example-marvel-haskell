@@ -4,6 +4,7 @@
 
 module Models.Character
   ( Character(..)
+  , CharacterId
   , getMarvelUrl
   , getNonEmptyDescription
   , hasComics
@@ -18,12 +19,13 @@ import GHC.Generics (Generic)
 import Models.ComicList (ComicList)
 import qualified Models.ComicList as CL
 import Models.ComicSummary (ComicSummary)
+import Models.Ids (CharacterId)
 import Models.Image (Image)
 import Models.Url (Url, isDetailUrl)
 import qualified Models.Url as U
 
 data Character = Character
-  { id :: Int
+  { id :: CharacterId
   , name :: Text
   , description :: Maybe Text
   , urls :: [Url]

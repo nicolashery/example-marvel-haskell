@@ -39,8 +39,8 @@ import Network.Wreq (defaults, param, getWith, responseBody, statusCode)
 
 import Config (ConfigM)
 import qualified Config as Cfg
-import Models.Character (Character)
-import Models.Comic (Comic)
+import Models.Character (Character, CharacterId)
+import Models.Comic (Comic, ComicId)
 import qualified Models.Image as I
 import Models.FeaturedCharacter (FeaturedCharacter)
 import qualified Models.FeaturedCharacter as FCh
@@ -207,7 +207,7 @@ findAllComics paginationOptions = handleHttpException $ do
   let result = eitherErrorDecode (r ^. responseBody)
   return result
 
-findCharacter :: Int -> ConfigM (Either MarvelError CharacterResponse)
+findCharacter :: CharacterId -> ConfigM (Either MarvelError CharacterResponse)
 findCharacter characterId = handleHttpException $ do
   publicKey <- asks Cfg.marvelPublicKey
   ts <- liftIO getTimestamp
@@ -220,7 +220,7 @@ findCharacter characterId = handleHttpException $ do
   let result = eitherErrorDecode (r ^. responseBody)
   return result
 
-findComic :: Int -> ConfigM (Either MarvelError ComicResponse)
+findComic :: ComicId -> ConfigM (Either MarvelError ComicResponse)
 findComic comicId = handleHttpException $ do
   publicKey <- asks Cfg.marvelPublicKey
   ts <- liftIO getTimestamp

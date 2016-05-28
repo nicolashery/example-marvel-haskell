@@ -23,6 +23,7 @@ executable          app
       , Models.ComicSummary
       , Models.FeaturedCharacter
       , Models.FeaturedComic
+      , Models.Ids
       , Models.Image
       , Models.Pagination
       , Models.Url

@@ -17,6 +17,7 @@ import Web.Scotty.Trans (ActionT, html, param, request, rescue, status)
 import Config (ConfigM)
 import Helpers.PageTitle (makePageTitle)
 import Helpers.PathInfo (getRootPath)
+import Models.Comic (ComicId)
 import qualified Models.Comic as C
 import Services.Marvel
   ( findAllComics
@@ -55,7 +56,7 @@ getPaginationOptions _offset = Mvl.PaginationOptions
 
 getComic :: ActionT TL.Text ConfigM ()
 getComic = do
-  _id :: Int <- param "id"
+  _id :: ComicId <- param "id"
   req <- request
   let rootPath = getRootPath req
   result <- lift (findComic _id)

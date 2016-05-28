@@ -15,6 +15,8 @@ import qualified Data.Text as T
 import GHC.Generics (Generic)
 import Text.Regex.PCRE ((=~))
 
+import Models.Ids (ComicId)
+
 data ComicSummary = ComicSummary
   { resourceURI :: Text
   , name :: Text
@@ -23,7 +25,7 @@ data ComicSummary = ComicSummary
 instance FromJSON ComicSummary
 instance ToJSON ComicSummary
 
-getId :: ComicSummary -> Maybe Int
+getId :: ComicSummary -> Maybe ComicId
 getId comicSummary =
   -- Note: need to use String, can't use Text with Regex apparently
   let uri = T.unpack (resourceURI comicSummary)
@@ -34,7 +36,7 @@ getId comicSummary =
     ((_:x:_):_) -> readMay (T.pack x) :: Maybe Int
     _ -> Nothing
 
-testGetId :: Maybe Int
+testGetId :: Maybe ComicId
 testGetId =
   let comicSummary = ComicSummary
         { resourceURI="http://gateway.marvel.com/v1/public/comics/21366"

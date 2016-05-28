@@ -8,10 +8,11 @@ import BasicPrelude
 import Data.Aeson (FromJSON(..), ToJSON(..))
 import GHC.Generics (Generic)
 
+import Models.Ids (CharacterId)
 import Models.Image (Image)
 
 data FeaturedCharacter = FeaturedCharacter
-  { id :: Int
+  { id :: CharacterId
   , name :: Text
   , thumbnail :: Image
   } deriving (Show, Generic)
