@@ -53,3 +53,32 @@ After making changes, quit the server with `Ctrl+C` and reload the code:
 ```
 
 Use `Ctrl+D` to quit the REPL.
+
+## Deployment
+
+The app is ready to be deployed with [Heroku Docker](https://devcenter.heroku.com/articles/docker).
+
+Make sure you have the prerequisites installed:
+
+- [Docker](https://docs.docker.com/engine/installation/)
+- [Docker Compose](https://docs.docker.com/compose/install/)
+- [Heroku Toolbelt](https://toolbelt.heroku.com/)
+- `heroku plugins:install heroku-docker`
+
+If not already done, create a new Heroku app with:
+
+```bash
+$ heroku create example-marvel-haskell
+```
+
+Or add the remote for an existing Heroku app with:
+
+```bash
+$ heroku git:remote -a example-marvel-haskell
+```
+
+To deploy a new version of the app, run:
+
+```bash
+$ heroku docker:release
+```

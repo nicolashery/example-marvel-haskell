@@ -1,0 +1,4 @@
+{
+  "name": "app",
+  "description": "This is required for heroku docker:release"
+}
