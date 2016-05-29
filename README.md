@@ -82,3 +82,5 @@ To deploy a new version of the app, run:
 ```bash
 $ heroku docker:release
 ```
+
+Remember to set configuration variables (except `PORT` which is set by Heroku), as well as `APP_ENV=Production`.

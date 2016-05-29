@@ -9,7 +9,8 @@
 {-# LANGUAGE UndecidableInstances #-}
 
 module Config
-  ( Config(..)
+  ( AppEnv(..)
+  , Config(..)
   , ConfigM(..)
   , getConfig
   ) where
@@ -27,10 +28,15 @@ import Control.Monad.Trans.Control
   , StM
   )
 import qualified Data.Text as T
-import System.Environment (getEnv)
+import System.Environment (getEnv, lookupEnv)
+
+data AppEnv = Development
+            | Production
+            deriving (Show, Read)
 
 data Config = Config
-  { port :: Int
+  { env :: AppEnv
+  , port :: Int
   , marvelPublicKey :: Text
   , marvelPrivateKey :: Text
   } deriving (Show)
@@ -63,11 +69,17 @@ instance MonadBaseControl IO ConfigM where
 
 getConfig :: IO Config
 getConfig = do
+  _env <- liftA read (liftA T.pack (getEnvDefault "Development" "APP_ENV"))
   _port <- liftA read (liftA T.pack (getEnv "PORT"))
   _marvelPublicKey <- liftA T.pack (getEnv "MARVEL_PUBLIC_KEY")
   _marvelPrivateKey <- liftA T.pack (getEnv "MARVEL_PRIVATE_KEY")
   return Config
-    { port = _port
+    { env = _env
+    , port = _port
     , marvelPublicKey = _marvelPublicKey
     , marvelPrivateKey = _marvelPrivateKey
     }
+
+getEnvDefault :: String -> String -> IO String
+getEnvDefault defaultValue envVar =
+  liftA (fromMaybe defaultValue) (lookupEnv envVar)
