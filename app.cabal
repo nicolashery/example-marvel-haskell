@@ -44,6 +44,7 @@ executable          app
       , Views.Pages.Comics
       , Views.Pages.Error
       , Views.Pages.Home
+      , Views.Pages.NotFound
     build-depends:
         aeson >= 0.9 && < 1.0
       , base >= 4 && < 5

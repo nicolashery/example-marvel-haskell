@@ -1,6 +1,2 @@
-FROM pbrisbin/heroku-haskell-stack:1.0.2
-
-COPY . /app/user
-RUN stack install
-
-RUN rm -rf /app/user/.stack-work
+FROM thoughtbot/heroku-haskell-stack:lts-5.17
+MAINTAINER Nicolas Hery <hi@nicolashery.com>
