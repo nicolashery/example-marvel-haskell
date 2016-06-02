@@ -1,6 +1,6 @@
 module Models.Ids (CharacterId, ComicId) where
 
-import BasicPrelude ()
+import BasicPrelude
 
 type CharacterId = Int
 type ComicId = Int
