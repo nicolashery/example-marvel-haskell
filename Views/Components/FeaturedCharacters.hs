@@ -12,6 +12,7 @@ import qualified Text.Blaze.Html5.Attributes as A
 import Models.FeaturedCharacter (FeaturedCharacter)
 import qualified Models.FeaturedCharacter as FCh
 import Models.Image (getStandardXLarge)
+import Routes (RouteUrl(CharacterUrl))
 
 featuredCharactersView :: [FeaturedCharacter] -> Html
 featuredCharactersView featuredCharacters =
@@ -26,7 +27,7 @@ featuredCharactersItemView :: FeaturedCharacter -> Html
 featuredCharactersItemView featuredCharacter =
   let name = FCh.name featuredCharacter
   in H.div ! A.class_ "col-md-3" $
-    H.a ! A.href ("/characters/" <> toValue (FCh.id featuredCharacter))
+    H.a ! A.href (toValue (CharacterUrl (FCh.id featuredCharacter)))
       ! A.class_ "thumbnail" $ do
       H.img ! A.class_ "img-responsive img-circle center-block"
             ! A.src (toValue (getStandardXLarge (FCh.thumbnail featuredCharacter)))

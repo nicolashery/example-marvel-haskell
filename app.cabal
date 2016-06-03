@@ -14,7 +14,6 @@ executable          app
       , Controllers.Comic
       , Controllers.Home
       , Helpers.PageTitle
-      , Helpers.PathInfo
       , Models.Character
       , Models.CharacterList
       , Models.CharacterSummary
@@ -27,6 +26,7 @@ executable          app
       , Models.Image
       , Models.Pagination
       , Models.Url
+      , Routes
       , Services.Marvel
       , Views.Components.CharacterDetails
       , Views.Components.CharactersList

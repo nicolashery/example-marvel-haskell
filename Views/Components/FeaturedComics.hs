@@ -12,6 +12,7 @@ import qualified Text.Blaze.Html5.Attributes as A
 import Models.FeaturedComic (FeaturedComic)
 import qualified Models.FeaturedComic as FCo
 import Models.Image (getStandardXLarge)
+import Routes (RouteUrl(ComicUrl))
 
 featuredComicsView :: [FeaturedComic] -> Html
 featuredComicsView featuredComics =
@@ -26,7 +27,7 @@ featuredComicsItemView :: FeaturedComic -> Html
 featuredComicsItemView featuredComic =
   let name = FCo.name featuredComic
   in H.div ! A.class_ "col-md-3" $
-    H.a ! A.href ("/comics/" <> toValue (FCo.id featuredComic))
+    H.a ! A.href (toValue (ComicUrl (FCo.id featuredComic)))
       ! A.class_ "thumbnail" $ do
       H.img ! A.class_ "img-responsive img-circle center-block"
             ! A.src (toValue (getStandardXLarge (FCo.thumbnail featuredComic)))

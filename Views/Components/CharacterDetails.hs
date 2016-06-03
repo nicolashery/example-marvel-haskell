@@ -20,6 +20,7 @@ import qualified Models.Character as C
 import Models.ComicSummary (ComicSummary, getId)
 import qualified Models.ComicSummary as CS
 import Models.Image (getPortraitXLarge)
+import Routes (RouteUrl(ComicUrl))
 
 characterDetailsView :: Character -> Html
 characterDetailsView character =
@@ -57,7 +58,7 @@ characterComicView comicSummary =
   H.li $
     case getId comicSummary of
       Just comicId ->
-        H.a ! A.href ("/comics/" <> toValue comicId) $
+        H.a ! A.href (toValue (ComicUrl comicId)) $
           toHtml (CS.name comicSummary)
       Nothing ->
         toHtml (CS.name comicSummary)

@@ -8,21 +8,27 @@ module Views.Pages.Character
 
 import BasicPrelude
 
-import Text.Blaze.Html5 (Html, toHtml, (!))
+import Text.Blaze.Html5 (Html, toHtml, toValue, (!))
 import qualified Text.Blaze.Html5 as H
 import qualified Text.Blaze.Html5.Attributes as A
 
 import Models.Character (Character)
 import qualified Models.Character as C
+import Routes
+  ( Route
+  , RouteUrl(CharactersUrl)
+  , emptyPaginationQuery
+  )
 import Views.Components.CharacterDetails (characterDetailsView)
 import Views.Layout (layoutView)
 
-characterPageView :: Text -> Text -> Character -> Html
-characterPageView rootPath pageTitle character =
-  layoutView rootPath pageTitle (characterPageContentView character)
+characterPageView :: Route -> Text -> Character -> Html
+characterPageView currentRoute pageTitle character =
+  layoutView currentRoute pageTitle (characterPageContentView character)
 
 characterPageContentView :: Character -> Html
 characterPageContentView character = do
-  H.a ! A.href "/characters" $ "Browse all characters"
+  let charactersUrl = toValue (CharactersUrl emptyPaginationQuery)
+  H.a ! A.href charactersUrl $ "Browse all characters"
   H.div ! A.class_ "page-header" $ H.h1 (toHtml (C.name character))
   characterDetailsView character

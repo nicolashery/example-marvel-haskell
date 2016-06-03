@@ -8,21 +8,27 @@ module Views.Pages.Comic
 
 import BasicPrelude
 
-import Text.Blaze.Html5 (Html, toHtml, (!))
+import Text.Blaze.Html5 (Html, toHtml, toValue, (!))
 import qualified Text.Blaze.Html5 as H
 import qualified Text.Blaze.Html5.Attributes as A
 
 import Models.Comic (Comic)
 import qualified Models.Comic as C
+import Routes
+  ( Route
+  , RouteUrl(ComicsUrl)
+  , emptyPaginationQuery
+  )
 import Views.Components.ComicDetails (comicDetailsView)
 import Views.Layout (layoutView)
 
-comicPageView :: Text -> Text -> Comic -> Html
-comicPageView rootPath pageTitle comic =
-  layoutView rootPath pageTitle (comicPageContentView comic)
+comicPageView :: Route -> Text -> Comic -> Html
+comicPageView currentRoute pageTitle comic =
+  layoutView currentRoute pageTitle (comicPageContentView comic)
 
 comicPageContentView :: Comic -> Html
 comicPageContentView comic = do
-  H.a ! A.href "/comics" $ "Browse all comics"
+  let comicsUrl = toValue (ComicsUrl emptyPaginationQuery)
+  H.a ! A.href comicsUrl $ "Browse all comics"
   H.div ! A.class_ "page-header" $ H.h1 (toHtml (C.title comic))
   comicDetailsView comic

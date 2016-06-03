@@ -7,19 +7,18 @@ import BasicPrelude
 
 import qualified Data.Text.Lazy as TL
 import Text.Blaze.Html.Renderer.Text (renderHtml)
-import Web.Scotty.Trans (ActionT, html, request)
+import Web.Scotty.Trans (ActionT, html)
 
 import Config (ConfigM)
 import Helpers.PageTitle (makePageTitle)
-import Helpers.PathInfo (getRootPath)
+import Routes (Route(HomeRoute))
 import Services.Marvel (fetchFeaturedCharacters, fetchFeaturedComics)
 import qualified Services.Marvel as Mvl
 import Views.Pages.Home (homePageView)
 
 getHome :: ActionT TL.Text ConfigM ()
 getHome = do
-  req <- request
-  let rootPath = getRootPath req
+  let currentRoute = HomeRoute
   let pageTitle = makePageTitle Nothing
   featuredCharactersResult <- lift fetchFeaturedCharacters
   let featuredCharacters =
@@ -29,5 +28,5 @@ getHome = do
   let featuredComics =
         either (\_ -> []) Mvl.featuredComics featuredComicsResult
   html (renderHtml (homePageView
-      rootPath pageTitle featuredCharacters featuredComics
+      currentRoute pageTitle featuredCharacters featuredComics
     ))

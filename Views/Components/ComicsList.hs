@@ -11,6 +11,7 @@ import qualified Text.Blaze.Html5.Attributes as A
 
 import Models.Comic (Comic)
 import qualified Models.Comic as C
+import Routes (RouteUrl(ComicUrl))
 
 comicsListView :: [Comic] -> Html
 comicsListView comics =
@@ -19,5 +20,5 @@ comicsListView comics =
 
 comicsListItemView :: Comic -> Html
 comicsListItemView comic =
-  H.a ! A.href ("/comics/" <> toValue (C.id comic)) ! A.class_ "list-group-item" $
+  H.a ! A.href (toValue (ComicUrl (C.id comic))) ! A.class_ "list-group-item" $
     H.h4 ! A.class_ "list-group-item-heading" $ toHtml (C.title comic)

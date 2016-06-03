@@ -12,13 +12,13 @@ import BasicPrelude
 import qualified Data.Text.Lazy as TL
 import Network.HTTP.Types (status404, status500)
 import Text.Blaze.Html.Renderer.Text (renderHtml)
-import Web.Scotty.Trans (ActionT, html, param, request, rescue, status)
+import Web.Scotty.Trans (ActionT, html, param, rescue, status)
 
 import Config (ConfigM)
 import Helpers.PageTitle (makePageTitle)
-import Helpers.PathInfo (getRootPath)
 import Models.Character (CharacterId)
 import qualified Models.Character as C
+import Routes (Route(CharactersRoute, CharacterRoute))
 import Services.Marvel
   ( findAllCharacters
   , defaultPaginationOptions
@@ -35,17 +35,16 @@ getCharacters :: ActionT TL.Text ConfigM ()
 getCharacters = do
   _offset :: Int <- param "offset" `rescue` (\_ -> return 0)
   let paginationOptions = getPaginationOptions _offset
-  req <- request
-  let rootPath = getRootPath req
+  let currentRoute = CharactersRoute
   let pageTitle = makePageTitle (Just "Characters")
   result <- lift (findAllCharacters paginationOptions)
   case result of
     Left err -> do
       status status500
-      html (renderHtml (errorView rootPath (show err)))
+      html (renderHtml (errorView currentRoute (show err)))
     Right response ->
       html (renderHtml (charactersPageView
-        rootPath pageTitle (Mvl.charactersPagination response) (Mvl.characters response)
+        currentRoute pageTitle (Mvl.charactersPagination response) (Mvl.characters response)
       ))
 
 getPaginationOptions :: Int -> PaginationOptions
@@ -57,19 +56,18 @@ getPaginationOptions _offset = Mvl.PaginationOptions
 getCharacter :: ActionT TL.Text ConfigM ()
 getCharacter = do
   _id :: CharacterId <- param "id"
-  req <- request
-  let rootPath = getRootPath req
+  let currentRoute = CharacterRoute
   result <- lift (findCharacter _id)
   case result of
     Left Mvl.NotFound -> do
       status status404
-      html (renderHtml (notFoundView rootPath))
+      html (renderHtml (notFoundView currentRoute))
     Left err -> do
       status status500
-      html (renderHtml (errorView rootPath (show err)))
+      html (renderHtml (errorView currentRoute (show err)))
     Right response ->
       let characterName = C.name (Mvl.character response)
           pageTitle = makePageTitle (Just characterName)
       in html (renderHtml (characterPageView
-        rootPath pageTitle (Mvl.character response)
+        currentRoute pageTitle (Mvl.character response)
       ))

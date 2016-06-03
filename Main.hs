@@ -14,14 +14,15 @@ import qualified Config as Cfg
 import Controllers.Home (getHome)
 import Controllers.Character (getCharacters, getCharacter)
 import Controllers.Comic (getComics, getComic)
+import Routes (Route(..), toPattern)
 
 router :: ScottyT TL.Text ConfigM ()
 router = do
-  get "/" getHome
-  get "/characters" getCharacters
-  get "/characters/:id" getCharacter
-  get "/comics" getComics
-  get "/comics/:id" getComic
+  get (toPattern HomeRoute) getHome
+  get (toPattern CharactersRoute) getCharacters
+  get (toPattern CharacterRoute) getCharacter
+  get (toPattern ComicsRoute) getComics
+  get (toPattern ComicRoute) getComic
 
 application :: AppEnv -> ScottyT TL.Text ConfigM ()
 application env = do
