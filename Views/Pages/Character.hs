@@ -12,6 +12,7 @@ import Text.Blaze.Html5 (Html, toHtml, toValue, (!))
 import qualified Text.Blaze.Html5 as H
 import qualified Text.Blaze.Html5.Attributes as A
 
+import Helpers.SPF (SPFHook(SPFLink))
 import Models.Character (Character)
 import qualified Models.Character as C
 import Routes
@@ -29,6 +30,6 @@ characterPageView currentRoute pageTitle character =
 characterPageContentView :: Character -> Html
 characterPageContentView character = do
   let charactersUrl = toValue (CharactersUrl emptyPaginationQuery)
-  H.a ! A.href charactersUrl $ "Browse all characters"
+  H.a ! A.class_ (toValue SPFLink) ! A.href charactersUrl $ "Browse all characters"
   H.div ! A.class_ "page-header" $ H.h1 (toHtml (C.name character))
   characterDetailsView character

@@ -9,6 +9,7 @@ import Text.Blaze.Html5 (Html, toValue, toHtml, (!))
 import qualified Text.Blaze.Html5 as H
 import qualified Text.Blaze.Html5.Attributes as A
 
+import Helpers.SPF (SPFHook(SPFLink))
 import Models.Comic (Comic)
 import qualified Models.Comic as C
 import Routes (RouteUrl(ComicUrl))
@@ -20,5 +21,6 @@ comicsListView comics =
 
 comicsListItemView :: Comic -> Html
 comicsListItemView comic =
-  H.a ! A.href (toValue (ComicUrl (C.id comic))) ! A.class_ "list-group-item" $
+  H.a ! A.href (toValue (ComicUrl (C.id comic)))
+      ! A.class_ ("list-group-item " <> toValue SPFLink) $
     H.h4 ! A.class_ "list-group-item-heading" $ toHtml (C.title comic)

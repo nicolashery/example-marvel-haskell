@@ -10,6 +10,7 @@ import Text.Blaze.Html5 (Html, toHtml, toValue, (!))
 import qualified Text.Blaze.Html5 as H
 import qualified Text.Blaze.Html5.Attributes as A
 
+import Helpers.SPF (SPFHook(SPFLink))
 import Models.Pagination (Pagination)
 import qualified Models.Pagination as P
 
@@ -27,8 +28,10 @@ resultsPaginationView makePaginationUrl pagination = do
         H.em " of "
         H.strong (toHtml total)
     H.li ! A.class_ (if P.isFirstPage pagination then "disabled" else "") $
-      H.a ! A.href (makePaginationUrl previousOffset) $
+      H.a ! A.class_ (toValue SPFLink)
+          ! A.href (makePaginationUrl previousOffset) $
         "Previous"
     H.li ! A.class_ (if P.isLastPage pagination then "disabled" else "") $
-      H.a ! A.href (makePaginationUrl nextOffset) $
+      H.a ! A.class_ (toValue SPFLink)
+          ! A.href (makePaginationUrl nextOffset) $
         "Next"

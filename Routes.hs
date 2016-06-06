@@ -69,7 +69,6 @@ toPattern ComicRoute = "/comics/:id"
 
 -- Use when building URLs in Blaze views
 instance ToValue RouteUrl where
-
   toValue HomeUrl =
     "/"
   toValue (CharactersUrl PaginationQuery { offset=(Just _offset)}) =

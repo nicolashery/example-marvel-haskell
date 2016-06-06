@@ -12,6 +12,7 @@ import Text.Blaze.Html5 (Html, toHtml, toValue, (!))
 import qualified Text.Blaze.Html5 as H
 import qualified Text.Blaze.Html5.Attributes as A
 
+import Helpers.SPF (SPFHook(SPFLink))
 import Models.Comic (Comic)
 import qualified Models.Comic as C
 import Routes
@@ -29,6 +30,6 @@ comicPageView currentRoute pageTitle comic =
 comicPageContentView :: Comic -> Html
 comicPageContentView comic = do
   let comicsUrl = toValue (ComicsUrl emptyPaginationQuery)
-  H.a ! A.href comicsUrl $ "Browse all comics"
+  H.a ! A.class_ (toValue SPFLink) ! A.href comicsUrl $ "Browse all comics"
   H.div ! A.class_ "page-header" $ H.h1 (toHtml (C.title comic))
   comicDetailsView comic

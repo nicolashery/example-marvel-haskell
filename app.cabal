@@ -6,7 +6,10 @@ build-type:    Simple
 executable          app
     hs-source-dirs: .
     main-is:        Main.hs
-    ghc-options:    -Wall -threaded -O2 -rtsopts -with-rtsopts=-N
+    ghc-options:
+      -Wall
+      -threaded -O2 -rtsopts -with-rtsopts=-N
+      -fno-warn-unused-do-bind
     extensions:     OverloadedStrings
     other-modules:
         Config
@@ -14,6 +17,7 @@ executable          app
       , Controllers.Comic
       , Controllers.Home
       , Helpers.PageTitle
+      , Helpers.SPF
       , Models.Character
       , Models.CharacterList
       , Models.CharacterSummary

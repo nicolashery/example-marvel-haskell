@@ -9,6 +9,7 @@ import Text.Blaze.Html5 (Html, toHtml, toValue, (!))
 import qualified Text.Blaze.Html5 as H
 import qualified Text.Blaze.Html5.Attributes as A
 
+import Helpers.SPF (SPFHook(SPFLink))
 import Models.Comic
   ( Comic
   , getMarvelUrl
@@ -58,7 +59,8 @@ comicCharacterView characterSummary =
   H.li $
     case getId characterSummary of
       Just characterId ->
-        H.a ! A.href (toValue (CharacterUrl characterId)) $
+        H.a ! A.class_ (toValue SPFLink)
+            ! A.href (toValue (CharacterUrl characterId)) $
           toHtml (CS.name characterSummary)
       Nothing ->
         toHtml (CS.name characterSummary)
